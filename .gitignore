@@ -1,3 +1,18 @@
-venv/
+# Python
+__pycache__/
+*.py[cod]
+*.so
 
-*.DS_Store
+# Virtual env
+venv/
+.venv/
+
+# Env files
+.env
+
+# macOS
+.DS_Store
+
+#local files
+images/
+models/
