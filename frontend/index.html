@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Table Extractor</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    display: none;
+  }
+
+  .spinner {
+    border: 4px solid #e0e0e0;
+    border-top: 4px solid #4f46e5;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+</div>
+
+<header class="bg-indigo-800 text-white flex justify-between items-center px-6 py-3 shadow">
+  <div class="text-lg font-semibold">📄 PDF Overview</div>
+  <img class="h-12" src="https://pointwork.com/wp-content/uploads/2023/06/NVO_BIG.D-1e40a3a3.png" alt="Company Logo">
+  <div class="text-lg font-semibold">🤖 AI Results</div>
+</header>
+
+<main class="flex h-[calc(100vh-64px)]">
+  <div class="flex-1 bg-white p-4 flex flex-col space-y-4 overflow-auto border-r">
+    <label class="block">
+      <span class="text-sm font-medium text-gray-700">Upload PDF</span>
+      <input type="file" id="pdfFile" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
+    </label>
+    <iframe id="pdfViewer" class="flex-1 border rounded-md shadow"></iframe>
+  </div>
+
+  <div class="flex-1 bg-gray-100 p-4 overflow-auto">
+    <div id="results" class="space-y-2"></div>
+    <div class="mt-4 flex space-x-2">
+      <button id="downloadJSON" disabled class="px-4 py-2 rounded bg-indigo-600 text-white disabled:bg-gray-300 hover:bg-indigo-700">Download JSON</button>
+      <button id="downloadCSV" disabled class="px-4 py-2 rounded bg-indigo-600 text-white disabled:bg-gray-300 hover:bg-indigo-700">Download CSV</button>
+    </div>
+  </div>
+</main>
+
+<script>
+const pdfFileInput = document.getElementById('pdfFile');
+const pdfViewer = document.getElementById('pdfViewer');
+const resultsDiv = document.getElementById('results');
+const btnJSON = document.getElementById('downloadJSON');
+const btnCSV = document.getElementById('downloadCSV');
+const loadingOverlay = document.getElementById('loading');
+
+let tableData = [];
+
+pdfFileInput.addEventListener('change', () => {
+    const file = pdfFileInput.files[0];
+    if (!file) return;
+
+    pdfViewer.src = URL.createObjectURL(file);
+
+    const formData = new FormData();
+    formData.append('pdf', file);
+
+    loadingOverlay.style.display = 'flex';
+
+    fetch('http://localhost:5000/process', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        const table = (data?.data?.[0]?.table) || data;
+        renderTable(table);
+    })
+    .catch(err => {
+        alert('Error: ' + err);
+    })
+    .finally(() => {
+        loadingOverlay.style.display = 'none';
+    });
+});
+
+function renderTable(table) {
+    tableData = table.map(row => row.map(cell => cell.text || cell));
+    resultsDiv.innerHTML = '';
+    const tbl = document.createElement('table');
+    tbl.className = 'min-w-full bg-white shadow rounded-md overflow-hidden';
+
+    tableData.forEach((row, i) => {
+        const tr = document.createElement('tr');
+        tr.className = i % 2 === 0 ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-100';
+        row.forEach((cell, j) => {
+            const td = document.createElement('td');
+            td.className = 'p-2 border text-sm align-top';
+            const input = document.createElement('input');
+            input.value = cell;
+            input.className = 'w-full border rounded px-1 text-sm';
+            input.oninput = () => tableData[i][j] = input.value;
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'ml-2';
+            checkbox.onchange = () => {
+                if (checkbox.checked) {
+                    td.classList.add('bg-green-100');
+                } else {
+                    td.classList.remove('bg-green-100');
+                }
+                updateRowHighlight(tr);
+                checkAllApproved();
+            };
+
+            td.appendChild(input);
+            td.appendChild(checkbox);
+            tr.appendChild(td);
+        });
+        tbl.appendChild(tr);
+    });
+    resultsDiv.appendChild(tbl);
+}
+
+function updateRowHighlight(tr) {
+    const checkboxes = tr.querySelectorAll('input[type=checkbox]');
+    const allChecked = [...checkboxes].every(cb => cb.checked);
+    if (allChecked) {
+        tr.classList.add('bg-green-200');
+    } else {
+        tr.classList.remove('bg-green-200');
+    }
+}
+
+function checkAllApproved() {
+    const allChecked = [...resultsDiv.querySelectorAll('input[type=checkbox]')].every(cb => cb.checked);
+    btnJSON.disabled = !allChecked;
+    btnCSV.disabled = !allChecked;
+}
+
+btnJSON.onclick = () => {
+    const blob = new Blob([JSON.stringify(tableData)], {type: 'application/json'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'table.json';
+    link.click();
+};
+
+btnCSV.onclick = () => {
+    const csv = tableData.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'table.csv';
+    link.click();
+};
+</script>
+
+</body>
+</html>
