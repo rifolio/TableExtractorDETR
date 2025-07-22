@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  table-api:
+    build: .
+    container_name: table-api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./pdfs:/app/pdfs
+      - ./images:/app/images
+    restart: unless-stopped
