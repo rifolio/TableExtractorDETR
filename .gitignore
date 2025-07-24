@@ -14,5 +14,4 @@ venv/
 .DS_Store
 
 #local files
-images/
 models/
