@@ -1,14 +1,6 @@
 # TableExtractor
 
-<img src="https://img.shields.io/badge/-Python-blue?style=for-the-badge">
-<img src="https://img.shields.io/badge/-Flask-black?style=for-the-badge">
-<img src="https://img.shields.io/badge/-PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white">
-<img src="https://img.shields.io/badge/-HuggingFace-yellow?style=for-the-badge&logo=huggingface&logoColor=black">
-<img src="https://img.shields.io/badge/-Numpy-blue?style=for-the-badge&logo=numpy&logoColor=white">
-<img src="https://img.shields.io/badge/-Matplotlib-darkgreen?style=for-the-badge&logo=matplotlib&logoColor=white">
-<img src="https://img.shields.io/badge/-Pillow-lightgrey?style=for-the-badge">
-<img src="https://img.shields.io/badge/-EasyOCR-orange?style=for-the-badge">
-<img src="https://img.shields.io/badge/-PyMuPDF-lightblue?style=for-the-badge">
+<img src="https://img.shields.io/badge/-Python-blue?style=for-the-badge"><img src="https://img.shields.io/badge/-Flask-black?style=for-the-badge"><img src="https://img.shields.io/badge/-PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white"><img src="https://img.shields.io/badge/-HuggingFace-yellow?style=for-the-badge&logo=huggingface&logoColor=black"><img src="https://img.shields.io/badge/-Numpy-blue?style=for-the-badge&logo=numpy&logoColor=white"><img src="https://img.shields.io/badge/-Matplotlib-darkgreen?style=for-the-badge&logo=matplotlib&logoColor=white"><img src="https://img.shields.io/badge/-Pillow-lightgrey?style=for-the-badge"><img src="https://img.shields.io/badge/-EasyOCR-orange?style=for-the-badge"><img src="https://img.shields.io/badge/-PyMuPDF-lightblue?style=for-the-badge">
 
 A minimal, research-focused pipeline for extracting tables from PDFs using state-of-the-art DETR-based models (Table Transformer) and simple postprocessing. This project is intended as a quick testbed and reference for table extraction, not as a production-ready solution.
 
