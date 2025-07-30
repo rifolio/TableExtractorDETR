@@ -75,7 +75,7 @@ Open it in your browser and connect to the backend at `http://localhost:5000`.
      Recognizes table structure (rows, columns, headers, spanning cells).
 
 4. **OCR:**  
-   Each detected cell is read using EasyOCR.
+   Each detected cell is read using EasyOCR. We suggest switching to another more porewfull OCR model.
 
 5. **Postprocessing:**
 
@@ -175,14 +175,14 @@ TableExtractorDETR/
 
 ## 📚 References
 
-- [Table Transformer (TATR) Paper](https://arxiv.org/abs/2204.08320)
+- [Table Transformer (TATR) Paper](https://arxiv.org/abs/2110.00061)
 - [Microsoft Table Transformer GitHub](https://github.com/microsoft/table-transformer)
-- [RAGFlow](https://github.com/microsoft/table-transformer)
+- [RAGFlow](https://github.com/infiniflow/ragflow)
 
 ---
 
 ## License
 
-MIT
+[MIT](LICENSE)
 
 ---
